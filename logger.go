@@ -393,11 +393,19 @@ func (log *Logger) check(lvl zapcore.Level, msg string) *zapcore.CheckedEntry {
 
 	frame, more := stack.Next()
 
+	filename := frame.File
+	if filename != "" {
+		temp := strings.Split(filename, "/")
+		if len(temp) > 1 {
+			filename = temp[len(temp)-1]
+		}
+	}
+
 	if log.addCaller {
 		ce.Caller = zapcore.EntryCaller{
 			Defined:  frame.PC != 0,
 			PC:       frame.PC,
-			File:     frame.File,
+			File:     filename,
 			Line:     frame.Line,
 			Function: frame.Function,
 		}
