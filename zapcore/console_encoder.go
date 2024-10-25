@@ -103,9 +103,9 @@ func (c consoleEncoder) EncodeEntry(ent Entry, fields []Field) (*buffer.Buffer, 
 	}
 	for i := range arr.elems {
 		if i > 0 {
-			line.AppendString("[")
+			line.AppendByte('[')
 			_, _ = fmt.Fprint(line, arr.elems[i])
-			line.AppendString("]")
+			line.AppendByte(']')
 		} else {
 			_, _ = fmt.Fprint(line, arr.elems[i])
 		}
