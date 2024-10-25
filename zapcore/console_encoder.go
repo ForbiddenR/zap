@@ -103,9 +103,16 @@ func (c consoleEncoder) EncodeEntry(ent Entry, fields []Field) (*buffer.Buffer, 
 	}
 	for i := range arr.elems {
 		if i > 0 {
-			line.AppendString(c.ConsoleSeparator)
+			line.AppendString("[")
+			_, _ = fmt.Fprint(line, arr.elems[i])
+			line.AppendString("]")
+		} else {
+			_, _ = fmt.Fprint(line, arr.elems[i])
 		}
-		_, _ = fmt.Fprint(line, arr.elems[i])
+		// if i > 0 {
+		// 	line.AppendString(c.ConsoleSeparator)
+		// }
+		// _, _ = fmt.Fprint(line, arr.elems[i])
 	}
 	putSliceEncoder(arr)
 
