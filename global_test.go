@@ -267,7 +267,7 @@ func TestRedirectStdLogAtInvalid(t *testing.T) {
 	assert.ErrorContains(t, err, "99", "Expected level code in error message")
 }
 
-func checkStdLogMessage(t *testing.T, msg string, logs *observer.ObservedLogs) {
+func checkStdLogMessage(t *testing.T, _ string, logs *observer.ObservedLogs) {
 	require.Equal(t, 1, logs.Len(), "Expected exactly one entry to be logged")
 	entry := logs.AllUntimed()[0]
 	assert.Equal(t, []Field{}, entry.Context, "Unexpected entry context.")
