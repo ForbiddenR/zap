@@ -223,7 +223,7 @@ func Benchmark5WithLazysNotUsed(b *testing.B) {
 func benchmarkWithUsed(b *testing.B, withMethod func(*Logger, ...zapcore.Field) *Logger, N int, use bool) {
 	keys := make([]string, N)
 	values := make([]string, N)
-	for i := 0; i < N; i++ {
+	for i := range N {
 		keys[i] = "k" + strconv.Itoa(i)
 		values[i] = "v" + strconv.Itoa(i)
 	}
@@ -231,7 +231,7 @@ func benchmarkWithUsed(b *testing.B, withMethod func(*Logger, ...zapcore.Field) 
 	b.ResetTimer()
 
 	withBenchedLogger(b, func(log *Logger) {
-		for i := 0; i < N; i++ {
+		for i := range N {
 			log = withMethod(log, String(keys[i], values[i]))
 		}
 		if use {
@@ -275,7 +275,7 @@ func Benchmark100Fields(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		for i := 0; i < batchSize; i++ {
+		for i := range batchSize {
 			// We're duplicating keys, but that doesn't affect performance.
 			first[i] = Int("foo", i)
 			second[i] = Int("foo", i+batchSize)
@@ -336,22 +336,18 @@ func BenchmarkAny(b *testing.B) {
 				b.Run("typed", func(b *testing.B) {
 					withBenchedLogger(b, func(log *Logger) {
 						var wg sync.WaitGroup
-						wg.Add(1)
-						go func() {
+						wg.Go(func() {
 							log.Info("", tt.typed())
-							wg.Done()
-						}()
+						})
 						wg.Wait()
 					})
 				})
 				b.Run("any", func(b *testing.B) {
 					withBenchedLogger(b, func(log *Logger) {
 						var wg sync.WaitGroup
-						wg.Add(1)
-						go func() {
+						wg.Go(func() {
 							log.Info("", Any(key, tt.anyArg))
-							wg.Done()
-						}()
+						})
 						wg.Wait()
 					})
 				})

@@ -118,7 +118,7 @@ func TestAtomicLevelText(t *testing.T) {
 	for _, tt := range tests {
 		var lvl AtomicLevel
 		// Test both initial unmarshaling and overwriting existing value.
-		for i := 0; i < 2; i++ {
+		for range 2 {
 			if tt.err {
 				assert.Error(t, lvl.UnmarshalText([]byte(tt.text)), "Expected unmarshaling %q to fail.", tt.text)
 			} else {

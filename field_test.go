@@ -43,18 +43,16 @@ func (n username) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 func assertCanBeReused(t testing.TB, field Field) {
 	var wg sync.WaitGroup
 
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		enc := zapcore.NewMapObjectEncoder()
 
 		// Ensure using the field in multiple encoders in separate goroutines
 		// does not cause any races or panics.
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			assert.NotPanics(t, func() {
 				field.AddTo(enc)
 			}, "Reusing a field should not cause issues")
-		}()
+		})
 	}
 
 	wg.Wait()

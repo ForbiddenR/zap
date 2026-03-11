@@ -66,7 +66,7 @@ func (s StringSlice) MarshalLogArray(encoder ArrayEncoder) error {
 
 func generateStringSlice(n int) StringSlice {
 	output := make(StringSlice, 0, n)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		output = append(output, fmt.Sprint("00000000-0000-0000-0000-0000000000", i))
 	}
 	return output
@@ -99,16 +99,16 @@ func BenchmarkZapJSON(b *testing.B) {
 
 func BenchmarkStandardJSON(b *testing.B) {
 	record := struct {
-		Level      string                 `json:"level"`
-		Message    string                 `json:"msg"`
-		Time       time.Time              `json:"ts"`
-		Fields     map[string]interface{} `json:"fields"`
+		Level      string         `json:"level"`
+		Message    string         `json:"msg"`
+		Time       time.Time      `json:"ts"`
+		Fields     map[string]any `json:"fields"`
 		Additional StringSlice
 	}{
 		Level:   "debug",
 		Message: "fake",
 		Time:    time.Unix(0, 0),
-		Fields: map[string]interface{}{
+		Fields: map[string]any{
 			"str":     "foo",
 			"int64-1": int64(1),
 			"int64-2": int64(1),

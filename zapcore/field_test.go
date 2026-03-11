@@ -103,15 +103,15 @@ func TestUnknownFieldType(t *testing.T) {
 }
 
 func TestFieldAddingError(t *testing.T) {
-	var empty interface{}
+	var empty any
 	tests := []struct {
 		t     FieldType
-		iface interface{}
-		want  interface{}
+		iface any
+		want  any
 		err   string
 	}{
-		{t: ArrayMarshalerType, iface: users(-1), want: []interface{}{}, err: "too few users"},
-		{t: ObjectMarshalerType, iface: users(-1), want: map[string]interface{}{}, err: "too few users"},
+		{t: ArrayMarshalerType, iface: users(-1), want: []any{}, err: "too few users"},
+		{t: ObjectMarshalerType, iface: users(-1), want: map[string]any{}, err: "too few users"},
 		{t: InlineMarshalerType, iface: users(-1), want: nil, err: "too few users"},
 		{t: StringerType, iface: obj{}, want: empty, err: "PANIC=interface conversion: zapcore_test.obj is not fmt.Stringer: missing method String"},
 		{t: StringerType, iface: &obj{1}, want: empty, err: "PANIC=panic with string"},
@@ -133,11 +133,11 @@ func TestFields(t *testing.T) {
 		t     FieldType
 		i     int64
 		s     string
-		iface interface{}
-		want  interface{}
+		iface any
+		want  any
 	}{
-		{t: ArrayMarshalerType, iface: users(2), want: []interface{}{"user", "user"}},
-		{t: ObjectMarshalerType, iface: users(2), want: map[string]interface{}{"users": 2}},
+		{t: ArrayMarshalerType, iface: users(2), want: []any{"user", "user"}},
+		{t: ObjectMarshalerType, iface: users(2), want: map[string]any{"users": 2}},
 		{t: BoolType, i: 0, want: false},
 		{t: ByteStringType, iface: []byte("foo"), want: "foo"},
 		{t: Complex128Type, iface: 1 + 2i, want: 1 + 2i},
@@ -159,11 +159,11 @@ func TestFields(t *testing.T) {
 		{t: UintptrType, i: 42, want: uintptr(42)},
 		{t: ReflectType, iface: users(2), want: users(2)},
 		{t: ReflectType, iface: nil, want: nil},
-		{t: NamespaceType, want: map[string]interface{}{}},
+		{t: NamespaceType, want: map[string]any{}},
 		{t: StringerType, iface: users(2), want: "2 users"},
 		{t: StringerType, iface: &obj{}, want: "obj"},
 		{t: StringerType, iface: (*obj)(nil), want: "nil obj"},
-		{t: SkipType, want: interface{}(nil)},
+		{t: SkipType, want: any(nil)},
 		{t: StringerType, iface: (*url.URL)(nil), want: "<nil>"},
 		{t: StringerType, iface: (*users)(nil), want: "<nil>"},
 		{t: ErrorType, iface: (*errObj)(nil), want: "<nil>"},
@@ -194,10 +194,10 @@ func TestInlineMarshaler(t *testing.T) {
 	nestedObj := Field{Key: "nested", Type: ObjectMarshalerType, Interface: users(11)}
 	nestedObj.AddTo(enc)
 
-	assert.Equal(t, map[string]interface{}{
+	assert.Equal(t, map[string]any{
 		"k":     "s",
 		"users": 10,
-		"nested": map[string]interface{}{
+		"nested": map[string]any{
 			"users": 11,
 		},
 	}, enc.Fields)

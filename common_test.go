@@ -46,10 +46,10 @@ func withSugar(t testing.TB, e zapcore.LevelEnabler, opts []Option, f func(*Suga
 
 func runConcurrently(goroutines, iterations int, wg *sync.WaitGroup, f func()) {
 	wg.Add(goroutines)
-	for g := 0; g < goroutines; g++ {
+	for range goroutines {
 		go func() {
 			defer wg.Done()
-			for i := 0; i < iterations; i++ {
+			for range iterations {
 				f()
 			}
 		}()

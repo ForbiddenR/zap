@@ -201,7 +201,7 @@ func (e *TimeEncoder) UnmarshalText(text []byte) error {
 // If value is string, it uses UnmarshalText.
 //
 //	timeEncoder: iso8601
-func (e *TimeEncoder) UnmarshalYAML(unmarshal func(interface{}) error) error {
+func (e *TimeEncoder) UnmarshalYAML(unmarshal func(any) error) error {
 	var o struct {
 		Layout string `json:"layout" yaml:"layout"`
 	}
@@ -219,7 +219,7 @@ func (e *TimeEncoder) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 // UnmarshalJSON unmarshals JSON to a TimeEncoder as same way UnmarshalYAML does.
 func (e *TimeEncoder) UnmarshalJSON(data []byte) error {
-	return e.UnmarshalYAML(func(v interface{}) error {
+	return e.UnmarshalYAML(func(v any) error {
 		return json.Unmarshal(data, v)
 	})
 }
@@ -391,7 +391,7 @@ type ObjectEncoder interface {
 
 	// AddReflected uses reflection to serialize arbitrary objects, so it can be
 	// slow and allocation-heavy.
-	AddReflected(key string, value interface{}) error
+	AddReflected(key string, value any) error
 	// OpenNamespace opens an isolated namespace where all subsequent fields will
 	// be added. Applications can use namespaces to prevent key collisions when
 	// injecting loggers into sub-components or third-party libraries.
@@ -416,7 +416,7 @@ type ArrayEncoder interface {
 
 	// AppendReflected uses reflection to serialize arbitrary objects, so it's
 	// slow and allocation-heavy.
-	AppendReflected(value interface{}) error
+	AppendReflected(value any) error
 }
 
 // PrimitiveArrayEncoder is the subset of the ArrayEncoder interface that deals

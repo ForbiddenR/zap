@@ -30,24 +30,24 @@ import (
 
 func TestMapObjectEncoderAdd(t *testing.T) {
 	// Expected output of a turducken.
-	wantTurducken := map[string]interface{}{
-		"ducks": []interface{}{
-			map[string]interface{}{"in": "chicken"},
-			map[string]interface{}{"in": "chicken"},
+	wantTurducken := map[string]any{
+		"ducks": []any{
+			map[string]any{"in": "chicken"},
+			map[string]any{"in": "chicken"},
 		},
 	}
 
 	tests := []struct {
 		desc     string
 		f        func(ObjectEncoder)
-		expected interface{}
+		expected any
 	}{
 		{
 			desc: "AddObject",
 			f: func(e ObjectEncoder) {
 				assert.NoError(t, e.AddObject("k", loggable{true}), "Expected AddObject to succeed.")
 			},
-			expected: map[string]interface{}{"loggable": "yes"},
+			expected: map[string]any{"loggable": "yes"},
 		},
 		{
 			desc: "AddObject (nested)",
@@ -66,21 +66,21 @@ func TestMapObjectEncoderAdd(t *testing.T) {
 					return nil
 				})), "Expected AddArray to succeed.")
 			},
-			expected: []interface{}{true, false, true},
+			expected: []any{true, false, true},
 		},
 		{
 			desc: "AddArray (nested)",
 			f: func(e ObjectEncoder) {
 				assert.NoError(t, e.AddArray("k", turduckens(2)), "Expected AddArray to succeed.")
 			},
-			expected: []interface{}{wantTurducken, wantTurducken},
+			expected: []any{wantTurducken, wantTurducken},
 		},
 		{
 			desc: "AddArray (empty)",
 			f: func(e ObjectEncoder) {
 				assert.NoError(t, e.AddArray("k", turduckens(0)), "Expected AddArray to succeed.")
 			},
-			expected: []interface{}{},
+			expected: []any{},
 		},
 		{
 			desc:     "AddBinary",
@@ -190,9 +190,9 @@ func TestMapObjectEncoderAdd(t *testing.T) {
 		{
 			desc: "AddReflected",
 			f: func(e ObjectEncoder) {
-				assert.NoError(t, e.AddReflected("k", map[string]interface{}{"foo": 5}), "Expected AddReflected to succeed.")
+				assert.NoError(t, e.AddReflected("k", map[string]any{"foo": 5}), "Expected AddReflected to succeed.")
 			},
-			expected: map[string]interface{}{"foo": 5},
+			expected: map[string]any{"foo": 5},
 		},
 		{
 			desc: "OpenNamespace",
@@ -204,11 +204,11 @@ func TestMapObjectEncoderAdd(t *testing.T) {
 				e.OpenNamespace("inner")
 				e.AddInt("foo", 3)
 			},
-			expected: map[string]interface{}{
+			expected: map[string]any{
 				"foo": 1,
-				"middle": map[string]interface{}{
+				"middle": map[string]any{
 					"foo": 2,
-					"inner": map[string]interface{}{
+					"inner": map[string]any{
 						"foo": 3,
 					},
 				},
@@ -221,8 +221,8 @@ func TestMapObjectEncoderAdd(t *testing.T) {
 				assert.NoError(t, e.AddObject("obj", maybeNamespace{false}))
 				e.AddString("not-obj", "should-be-outside-obj")
 			},
-			expected: map[string]interface{}{
-				"obj": map[string]interface{}{
+			expected: map[string]any{
+				"obj": map[string]any{
 					"obj-out": "obj-outside-namespace",
 				},
 				"not-obj": "should-be-outside-obj",
@@ -235,10 +235,10 @@ func TestMapObjectEncoderAdd(t *testing.T) {
 				assert.NoError(t, e.AddObject("obj", maybeNamespace{true}))
 				e.AddString("not-obj", "should-be-outside-obj")
 			},
-			expected: map[string]interface{}{
-				"obj": map[string]interface{}{
+			expected: map[string]any{
+				"obj": map[string]any{
 					"obj-out": "obj-outside-namespace",
-					"obj-namespace": map[string]interface{}{
+					"obj-namespace": map[string]any{
 						"obj-in": "obj-inside-namespace",
 					},
 				},
@@ -260,7 +260,7 @@ func TestSliceArrayEncoderAppend(t *testing.T) {
 	tests := []struct {
 		desc     string
 		f        func(ArrayEncoder)
-		expected interface{}
+		expected any
 	}{
 		// AppendObject and AppendArray are covered by the AddObject (nested) and
 		// AddArray (nested) cases above.
@@ -287,9 +287,9 @@ func TestSliceArrayEncoderAppend(t *testing.T) {
 		{
 			desc: "AppendReflected",
 			f: func(e ArrayEncoder) {
-				assert.NoError(t, e.AppendReflected(map[string]interface{}{"foo": 5}))
+				assert.NoError(t, e.AppendReflected(map[string]any{"foo": 5}))
 			},
-			expected: map[string]interface{}{"foo": 5},
+			expected: map[string]any{"foo": 5},
 		},
 		{
 			desc: "AppendArray (arrays of arrays)",
@@ -301,7 +301,7 @@ func TestSliceArrayEncoderAppend(t *testing.T) {
 				}))
 				assert.NoError(t, err)
 			},
-			expected: []interface{}{true, false},
+			expected: []any{true, false},
 		},
 		{
 			desc: "object (no nested namespace) then string",
@@ -313,8 +313,8 @@ func TestSliceArrayEncoderAppend(t *testing.T) {
 				}))
 				assert.NoError(t, err)
 			},
-			expected: []interface{}{
-				map[string]interface{}{
+			expected: []any{
+				map[string]any{
 					"obj-out": "obj-outside-namespace",
 				},
 				"should-be-outside-obj",
@@ -330,10 +330,10 @@ func TestSliceArrayEncoderAppend(t *testing.T) {
 				}))
 				assert.NoError(t, err)
 			},
-			expected: []interface{}{
-				map[string]interface{}{
+			expected: []any{
+				map[string]any{
 					"obj-out": "obj-outside-namespace",
-					"obj-namespace": map[string]interface{}{
+					"obj-namespace": map[string]any{
 						"obj-in": "obj-inside-namespace",
 					},
 				},
@@ -351,9 +351,9 @@ func TestSliceArrayEncoderAppend(t *testing.T) {
 				return nil
 			})), "Expected AddArray to succeed.")
 
-			arr, ok := enc.Fields["k"].([]interface{})
+			arr, ok := enc.Fields["k"].([]any)
 			require.True(t, ok, "Test case %s didn't encode an array.", tt.desc)
-			assert.Equal(t, []interface{}{tt.expected, tt.expected}, arr, "Unexpected encoder output.")
+			assert.Equal(t, []any{tt.expected, tt.expected}, arr, "Unexpected encoder output.")
 		})
 	}
 }
@@ -363,7 +363,7 @@ func TestMapObjectEncoderReflectionFailures(t *testing.T) {
 	assert.Error(t, enc.AddObject("object", loggable{false}), "Expected AddObject to fail.")
 	assert.Equal(
 		t,
-		map[string]interface{}{"object": map[string]interface{}{}},
+		map[string]any{"object": map[string]any{}},
 		enc.Fields,
 		"Expected encoder to use empty values on errors.",
 	)

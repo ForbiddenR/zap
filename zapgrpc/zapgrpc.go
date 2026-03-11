@@ -116,19 +116,19 @@ func NewLogger(l *zap.Logger, options ...Option) *Logger {
 type printer struct {
 	enab   zapcore.LevelEnabler
 	level  zapcore.Level
-	print  func(...interface{})
-	printf func(string, ...interface{})
+	print  func(...any)
+	printf func(string, ...any)
 }
 
-func (v *printer) Print(args ...interface{}) {
+func (v *printer) Print(args ...any) {
 	v.print(args...)
 }
 
-func (v *printer) Printf(format string, args ...interface{}) {
+func (v *printer) Printf(format string, args ...any) {
 	v.printf(format, args...)
 }
 
-func (v *printer) Println(args ...interface{}) {
+func (v *printer) Println(args ...any) {
 	if v.enab.Enabled(v.level) {
 		v.print(sprintln(args))
 	}
@@ -147,87 +147,87 @@ type Logger struct {
 // Print implements grpclog.Logger.
 //
 // Deprecated: use [Logger.Info].
-func (l *Logger) Print(args ...interface{}) {
+func (l *Logger) Print(args ...any) {
 	l.print.Print(args...)
 }
 
 // Printf implements grpclog.Logger.
 //
 // Deprecated: use [Logger.Infof].
-func (l *Logger) Printf(format string, args ...interface{}) {
+func (l *Logger) Printf(format string, args ...any) {
 	l.print.Printf(format, args...)
 }
 
 // Println implements grpclog.Logger.
 //
 // Deprecated: use [Logger.Info].
-func (l *Logger) Println(args ...interface{}) {
+func (l *Logger) Println(args ...any) {
 	l.print.Println(args...)
 }
 
 // Info implements grpclog.LoggerV2.
-func (l *Logger) Info(args ...interface{}) {
+func (l *Logger) Info(args ...any) {
 	l.delegate.Info(args...)
 }
 
 // Infoln implements grpclog.LoggerV2.
-func (l *Logger) Infoln(args ...interface{}) {
+func (l *Logger) Infoln(args ...any) {
 	if l.levelEnabler.Enabled(zapcore.InfoLevel) {
 		l.delegate.Info(sprintln(args))
 	}
 }
 
 // Infof implements grpclog.LoggerV2.
-func (l *Logger) Infof(format string, args ...interface{}) {
+func (l *Logger) Infof(format string, args ...any) {
 	l.delegate.Infof(format, args...)
 }
 
 // Warning implements grpclog.LoggerV2.
-func (l *Logger) Warning(args ...interface{}) {
+func (l *Logger) Warning(args ...any) {
 	l.delegate.Warn(args...)
 }
 
 // Warningln implements grpclog.LoggerV2.
-func (l *Logger) Warningln(args ...interface{}) {
+func (l *Logger) Warningln(args ...any) {
 	if l.levelEnabler.Enabled(zapcore.WarnLevel) {
 		l.delegate.Warn(sprintln(args))
 	}
 }
 
 // Warningf implements grpclog.LoggerV2.
-func (l *Logger) Warningf(format string, args ...interface{}) {
+func (l *Logger) Warningf(format string, args ...any) {
 	l.delegate.Warnf(format, args...)
 }
 
 // Error implements grpclog.LoggerV2.
-func (l *Logger) Error(args ...interface{}) {
+func (l *Logger) Error(args ...any) {
 	l.delegate.Error(args...)
 }
 
 // Errorln implements grpclog.LoggerV2.
-func (l *Logger) Errorln(args ...interface{}) {
+func (l *Logger) Errorln(args ...any) {
 	if l.levelEnabler.Enabled(zapcore.ErrorLevel) {
 		l.delegate.Error(sprintln(args))
 	}
 }
 
 // Errorf implements grpclog.LoggerV2.
-func (l *Logger) Errorf(format string, args ...interface{}) {
+func (l *Logger) Errorf(format string, args ...any) {
 	l.delegate.Errorf(format, args...)
 }
 
 // Fatal implements grpclog.LoggerV2.
-func (l *Logger) Fatal(args ...interface{}) {
+func (l *Logger) Fatal(args ...any) {
 	l.fatal.Print(args...)
 }
 
 // Fatalln implements grpclog.LoggerV2.
-func (l *Logger) Fatalln(args ...interface{}) {
+func (l *Logger) Fatalln(args ...any) {
 	l.fatal.Println(args...)
 }
 
 // Fatalf implements grpclog.LoggerV2.
-func (l *Logger) Fatalf(format string, args ...interface{}) {
+func (l *Logger) Fatalf(format string, args ...any) {
 	l.fatal.Printf(format, args...)
 }
 
@@ -236,7 +236,7 @@ func (l *Logger) V(level int) bool {
 	return l.levelEnabler.Enabled(_grpcToZapLevel[level])
 }
 
-func sprintln(args []interface{}) string {
+func sprintln(args []any) string {
 	s := fmt.Sprintln(args...)
 	// Drop the new line character added by Sprintln
 	return s[:len(s)-1]

@@ -199,10 +199,8 @@ func TestLazyCoreRace(t *testing.T) {
 	const numGoroutines = 50
 
 	// Test concurrent access to Enabled() method which was the source of the race
-	for i := 0; i < numGoroutines; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	for range numGoroutines {
+		wg.Go(func() {
 
 			// These operations should not race
 			_ = lazyCore.Enabled(zapcore.InfoLevel)
@@ -212,7 +210,7 @@ func TestLazyCoreRace(t *testing.T) {
 			if ce := lazyCore.Check(zapcore.Entry{Level: zapcore.InfoLevel, Message: "test"}, nil); ce != nil {
 				_ = lazyCore.Write(zapcore.Entry{Level: zapcore.InfoLevel, Message: "test"}, nil)
 			}
-		}()
+		})
 	}
 
 	wg.Wait()

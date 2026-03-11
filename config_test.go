@@ -62,7 +62,7 @@ func TestConfig(t *testing.T) {
 
 			tt.cfg.OutputPaths = []string{logOut}
 			tt.cfg.EncoderConfig.TimeKey = "" // no timestamps in tests
-			tt.cfg.InitialFields = map[string]interface{}{"z": "zz", "k": "v"}
+			tt.cfg.InitialFields = map[string]any{"z": "zz", "k": "v"}
 
 			hook, count := makeCountingHook()
 			logger, err := tt.cfg.Build(Hooks(hook))
@@ -77,7 +77,7 @@ func TestConfig(t *testing.T) {
 			logs := string(byteContents)
 			assert.Regexp(t, tt.expectRe, logs, "Unexpected log output.")
 
-			for i := 0; i < 200; i++ {
+			for range 200 {
 				logger.Info("sampling")
 			}
 			assert.Equal(t, tt.expectN, count.Load(), "Hook called an unexpected number of times.")
@@ -181,7 +181,7 @@ func TestConfigWithSamplingHook(t *testing.T) {
 	logOut := filepath.Join(t.TempDir(), "test.log")
 	cfg.OutputPaths = []string{logOut}
 	cfg.EncoderConfig.TimeKey = "" // no timestamps in tests
-	cfg.InitialFields = map[string]interface{}{"z": "zz", "k": "v"}
+	cfg.InitialFields = map[string]any{"z": "zz", "k": "v"}
 
 	logger, err := cfg.Build()
 	require.NoError(t, err, "Unexpected error constructing logger.")
@@ -195,7 +195,7 @@ func TestConfigWithSamplingHook(t *testing.T) {
 	logs := string(byteContents)
 	assert.Regexp(t, expectRe, logs, "Unexpected log output.")
 
-	for i := 0; i < 200; i++ {
+	for range 200 {
 		logger.Info("sampling")
 	}
 	assert.Equal(t, int64(expectDropped), dcount.Load())

@@ -33,12 +33,12 @@ func TestLoggedEntryContextMap(t *testing.T) {
 	tests := []struct {
 		msg    string
 		fields []zapcore.Field
-		want   map[string]interface{}
+		want   map[string]any
 	}{
 		{
 			msg:    "no fields",
 			fields: nil,
-			want:   map[string]interface{}{},
+			want:   map[string]any{},
 		},
 		{
 			msg: "simple",
@@ -46,7 +46,7 @@ func TestLoggedEntryContextMap(t *testing.T) {
 				zap.String("k1", "v"),
 				zap.Int64("k2", 10),
 			},
-			want: map[string]interface{}{
+			want: map[string]any{
 				"k1": "v",
 				"k2": int64(10),
 			},
@@ -57,7 +57,7 @@ func TestLoggedEntryContextMap(t *testing.T) {
 				zap.String("k1", "v1"),
 				zap.String("k1", "v2"),
 			},
-			want: map[string]interface{}{
+			want: map[string]any{
 				"k1": "v2",
 			},
 		},
@@ -68,9 +68,9 @@ func TestLoggedEntryContextMap(t *testing.T) {
 				zap.Namespace("nested"),
 				zap.String("k2", "v2"),
 			},
-			want: map[string]interface{}{
+			want: map[string]any{
 				"k1": "v1",
-				"nested": map[string]interface{}{
+				"nested": map[string]any{
 					"k2": "v2",
 				},
 			},

@@ -97,7 +97,6 @@ func TestLoggerLevel(t *testing.T) {
 	}
 
 	for _, lvl := range levels {
-		lvl := lvl
 		t.Run(lvl.String(), func(t *testing.T) {
 			t.Parallel()
 
@@ -964,7 +963,7 @@ func TestLoggerCustomOnFatal(t *testing.T) {
 	tests := []struct {
 		msg          string
 		onFatal      zapcore.CheckWriteAction
-		recoverValue interface{}
+		recoverValue any
 	}{
 		{
 			msg:          "panic",
@@ -982,7 +981,7 @@ func TestLoggerCustomOnFatal(t *testing.T) {
 		t.Run(tt.msg, func(t *testing.T) {
 			withLogger(t, InfoLevel, opts(OnFatal(tt.onFatal)), func(logger *Logger, logs *observer.ObservedLogs) {
 				var finished bool
-				recovered := make(chan interface{})
+				recovered := make(chan any)
 				go func() {
 					defer func() {
 						recovered <- recover()
@@ -1056,6 +1055,6 @@ func infoLog(logger *Logger, msg string, fields ...Field) {
 	logger.Info(msg, fields...)
 }
 
-func infoLogSugared(logger *SugaredLogger, args ...interface{}) {
+func infoLogSugared(logger *SugaredLogger, args ...any) {
 	logger.Info(args...)
 }

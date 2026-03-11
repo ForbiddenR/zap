@@ -564,7 +564,7 @@ func TestEncoderConfiguration(t *testing.T) {
 func TestLevelEncoders(t *testing.T) {
 	tests := []struct {
 		name     string
-		expected interface{} // output of encoding InfoLevel
+		expected any // output of encoding InfoLevel
 	}{
 		{"capital", "INFO"},
 		{"lower", "info"},
@@ -588,7 +588,7 @@ func TestTimeEncoders(t *testing.T) {
 	moment := time.Unix(100, 50005000).UTC()
 	tests := []struct {
 		yamlDoc  string
-		expected interface{} // output of serializing moment
+		expected any // output of serializing moment
 	}{
 		{"timeEncoder: iso8601", "1970-01-01T00:01:40.050Z"},
 		{"timeEncoder: ISO8601", "1970-01-01T00:01:40.050Z"},
@@ -631,7 +631,7 @@ func TestTimeEncodersParseFromJSON(t *testing.T) {
 	moment := time.Unix(100, 50005000).UTC()
 	tests := []struct {
 		jsonDoc  string
-		expected interface{} // output of serializing moment
+		expected any // output of serializing moment
 	}{
 		{`{"timeEncoder": "iso8601"}`, "1970-01-01T00:01:40.050Z"},
 		{`{"timeEncoder": {"layout": "06/01/02 03:04pm"}}`, "70/01/01 12:01am"},
@@ -654,7 +654,7 @@ func TestDurationEncoders(t *testing.T) {
 	elapsed := time.Second + 500*time.Nanosecond
 	tests := []struct {
 		name     string
-		expected interface{} // output of serializing elapsed
+		expected any // output of serializing elapsed
 	}{
 		{"string", "1.0000005s"},
 		{"nanos", int64(1000000500)},
@@ -679,7 +679,7 @@ func TestCallerEncoders(t *testing.T) {
 	caller := EntryCaller{Defined: true, File: "/home/jack/src/github.com/foo/foo.go", Line: 42}
 	tests := []struct {
 		name     string
-		expected interface{} // output of serializing caller
+		expected any // output of serializing caller
 	}{
 		{"", "foo/foo.go:42"},
 		{"something-random", "foo/foo.go:42"},
@@ -702,7 +702,7 @@ func TestCallerEncoders(t *testing.T) {
 func TestNameEncoders(t *testing.T) {
 	tests := []struct {
 		name     string
-		expected interface{} // output of encoding InfoLevel
+		expected any // output of encoding InfoLevel
 	}{
 		{"", "main"},
 		{"full", "main"},
@@ -721,14 +721,14 @@ func TestNameEncoders(t *testing.T) {
 	}
 }
 
-func assertAppended(t testing.TB, expected interface{}, f func(ArrayEncoder), msgAndArgs ...interface{}) {
+func assertAppended(t testing.TB, expected any, f func(ArrayEncoder), msgAndArgs ...any) {
 	mem := NewMapObjectEncoder()
 	err := mem.AddArray("k", ArrayMarshalerFunc(func(arr ArrayEncoder) error {
 		f(arr)
 		return nil
 	}))
 	assert.NoError(t, err, msgAndArgs...)
-	arr := mem.Fields["k"].([]interface{})
+	arr := mem.Fields["k"].([]any)
 	require.Equal(t, 1, len(arr), "Expected to append exactly one element to array.")
 	assert.Equal(t, expected, arr[0], msgAndArgs...)
 }

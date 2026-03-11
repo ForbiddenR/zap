@@ -30,7 +30,7 @@ import (
 // Use EncoderConfig.NewReflectedEncoder to set this.
 type ReflectedEncoder interface {
 	// Encode encodes and writes to the underlying data stream.
-	Encode(interface{}) error
+	Encode(any) error
 }
 
 func defaultReflectedEncoder(w io.Writer) ReflectedEncoder {

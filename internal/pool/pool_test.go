@@ -49,7 +49,7 @@ func TestNew(t *testing.T) {
 	// will need for the test) in order to avoid testing without race enabled.
 	//
 	// ref: https://cs.opensource.google/go/go/+/refs/tags/go1.20.2:src/sync/pool.go;l=100-103
-	for i := 0; i < 1_000; i++ {
+	for range 1_000 {
 		p.Put(&pooledValue[string]{
 			value: t.Name(),
 		})
@@ -57,7 +57,7 @@ func TestNew(t *testing.T) {
 
 	// Ensure that we always get the expected value. Note that this must only
 	// run a fraction of the number of times that Put is called above.
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		func() {
 			x := p.Get()
 			defer p.Put(x)
@@ -66,7 +66,7 @@ func TestNew(t *testing.T) {
 	}
 
 	// Depool all objects that might be in the pool to ensure that it's empty.
-	for i := 0; i < 1_000; i++ {
+	for range 1_000 {
 		p.Get()
 	}
 
@@ -87,12 +87,10 @@ func TestNew_Race(t *testing.T) {
 
 	// Run a number of goroutines that read and write pool object fields to
 	// tease out races.
-	for i := 0; i < 1_000; i++ {
+	for i := range 1_000 {
 		i := i
 
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 
 			x := p.Get()
 			defer p.Put(x)
@@ -101,6 +99,6 @@ func TestNew_Race(t *testing.T) {
 			if n := x.value; n >= -1 {
 				x.value = i
 			}
-		}()
+		})
 	}
 }

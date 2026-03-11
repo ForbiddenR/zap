@@ -37,7 +37,7 @@ import (
 
 func TestSugarWith(t *testing.T) {
 	// Convenience functions to create expected error logs.
-	ignored := func(msg interface{}) observer.LoggedEntry {
+	ignored := func(msg any) observer.LoggedEntry {
 		return observer.LoggedEntry{
 			Entry:   zapcore.Entry{Level: ErrorLevel, Message: _oddNumberErrMsg},
 			Context: []Field{Any("ignored", msg)},
@@ -56,12 +56,12 @@ func TestSugarWith(t *testing.T) {
 		}
 	}
 
-	type withAny func(*SugaredLogger, ...interface{}) *SugaredLogger
+	type withAny func(*SugaredLogger, ...any) *SugaredLogger
 	withMethods := []withAny{(*SugaredLogger).With, (*SugaredLogger).WithLazy}
 
 	tests := []struct {
 		desc     string
-		args     []interface{}
+		args     []any
 		expected []Field
 		errLogs  []observer.LoggedEntry
 	}{
@@ -73,61 +73,61 @@ func TestSugarWith(t *testing.T) {
 		},
 		{
 			desc:     "empty slice of args",
-			args:     []interface{}{},
+			args:     []any{},
 			expected: []Field{},
 			errLogs:  nil,
 		},
 		{
 			desc:     "just a dangling key",
-			args:     []interface{}{"should ignore"},
+			args:     []any{"should ignore"},
 			expected: []Field{},
 			errLogs:  []observer.LoggedEntry{ignored("should ignore")},
 		},
 		{
 			desc:     "well-formed key-value pairs",
-			args:     []interface{}{"foo", 42, "true", "bar"},
+			args:     []any{"foo", 42, "true", "bar"},
 			expected: []Field{Int("foo", 42), String("true", "bar")},
 			errLogs:  nil,
 		},
 		{
 			desc:     "just a structured field",
-			args:     []interface{}{Int("foo", 42)},
+			args:     []any{Int("foo", 42)},
 			expected: []Field{Int("foo", 42)},
 			errLogs:  nil,
 		},
 		{
 			desc:     "structured field and a dangling key",
-			args:     []interface{}{Int("foo", 42), "dangling"},
+			args:     []any{Int("foo", 42), "dangling"},
 			expected: []Field{Int("foo", 42)},
 			errLogs:  []observer.LoggedEntry{ignored("dangling")},
 		},
 		{
 			desc:     "structured field and a dangling non-string key",
-			args:     []interface{}{Int("foo", 42), 13},
+			args:     []any{Int("foo", 42), 13},
 			expected: []Field{Int("foo", 42)},
 			errLogs:  []observer.LoggedEntry{ignored(13)},
 		},
 		{
 			desc:     "key-value pair and a dangling key",
-			args:     []interface{}{"foo", 42, "dangling"},
+			args:     []any{"foo", 42, "dangling"},
 			expected: []Field{Int("foo", 42)},
 			errLogs:  []observer.LoggedEntry{ignored("dangling")},
 		},
 		{
 			desc:     "pairs, a structured field, and a dangling key",
-			args:     []interface{}{"first", "field", Int("foo", 42), "baz", "quux", "dangling"},
+			args:     []any{"first", "field", Int("foo", 42), "baz", "quux", "dangling"},
 			expected: []Field{String("first", "field"), Int("foo", 42), String("baz", "quux")},
 			errLogs:  []observer.LoggedEntry{ignored("dangling")},
 		},
 		{
 			desc:     "one non-string key",
-			args:     []interface{}{"foo", 42, true, "bar"},
+			args:     []any{"foo", 42, true, "bar"},
 			expected: []Field{Int("foo", 42)},
 			errLogs:  []observer.LoggedEntry{nonString(invalidPair{2, true, "bar"})},
 		},
 		{
 			desc:     "pairs, structured fields, non-string keys, and a dangling key",
-			args:     []interface{}{"foo", 42, true, "bar", Int("structure", 11), 42, "reversed", "baz", "quux", "dangling"},
+			args:     []any{"foo", 42, true, "bar", Int("structure", 11), 42, "reversed", "baz", "quux", "dangling"},
 			expected: []Field{Int("foo", 42), Int("structure", 11), String("baz", "quux")},
 			errLogs: []observer.LoggedEntry{
 				ignored("dangling"),
@@ -136,7 +136,7 @@ func TestSugarWith(t *testing.T) {
 		},
 		{
 			desc:     "multiple errors",
-			args:     []interface{}{errors.New("first"), errors.New("second"), errors.New("third")},
+			args:     []any{errors.New("first"), errors.New("second"), errors.New("third")},
 			expected: []Field{Error(errors.New("first"))},
 			errLogs: []observer.LoggedEntry{
 				ignoredError(errors.New("second")),
@@ -163,7 +163,7 @@ func TestSugarWith(t *testing.T) {
 }
 
 func TestSugarWithCaptures(t *testing.T) {
-	type withAny func(*SugaredLogger, ...interface{}) *SugaredLogger
+	type withAny func(*SugaredLogger, ...any) *SugaredLogger
 
 	tests := []struct {
 		name        string
@@ -250,7 +250,6 @@ func TestSugaredLoggerLevel(t *testing.T) {
 	}
 
 	for _, lvl := range levels {
-		lvl := lvl
 		t.Run(lvl.String(), func(t *testing.T) {
 			t.Parallel()
 
@@ -280,9 +279,9 @@ func TestSugarFieldsInvalidPairs(t *testing.T) {
 		require.Equal(t, 1, len(output[0].Context), "Expected one field in error entry context.")
 		enc := zapcore.NewMapObjectEncoder()
 		output[0].Context[0].AddTo(enc)
-		assert.Equal(t, []interface{}{
-			map[string]interface{}{"position": int64(0), "key": int64(42), "value": "foo"},
-			map[string]interface{}{"position": int64(2), "key": []interface{}{"bar"}, "value": "baz"},
+		assert.Equal(t, []any{
+			map[string]any{"position": int64(0), "key": int64(42), "value": "foo"},
+			map[string]any{"position": int64(2), "key": []any{"bar"}, "value": "baz"},
 		}, enc.Fields["invalid"], "Unexpected output when logging invalid key-value pairs.")
 	})
 }
@@ -299,8 +298,8 @@ func TestSugarStructuredLogging(t *testing.T) {
 	// Common to all test cases.
 	var (
 		err            = errors.New("qux")
-		context        = []interface{}{"foo", "bar"}
-		extra          = []interface{}{err, "baz", false}
+		context        = []any{"foo", "bar"}
+		extra          = []any{err, "baz", false}
 		expectedFields = []Field{String("foo", "bar"), Error(err), Bool("baz", false)}
 	)
 
@@ -327,14 +326,14 @@ func TestSugarStructuredLogging(t *testing.T) {
 
 func TestSugarConcatenatingLogging(t *testing.T) {
 	tests := []struct {
-		args   []interface{}
+		args   []any
 		expect string
 	}{
-		{[]interface{}{nil}, "<nil>"},
+		{[]any{nil}, "<nil>"},
 	}
 
 	// Common to all test cases.
-	context := []interface{}{"foo", "bar"}
+	context := []any{"foo", "bar"}
 	expectedFields := []Field{String("foo", "bar")}
 
 	for _, tt := range tests {
@@ -361,17 +360,17 @@ func TestSugarConcatenatingLogging(t *testing.T) {
 func TestSugarTemplatedLogging(t *testing.T) {
 	tests := []struct {
 		format string
-		args   []interface{}
+		args   []any
 		expect string
 	}{
 		{"", nil, ""},
 		{"foo", nil, "foo"},
 		// If the user fails to pass a template, degrade to fmt.Sprint.
-		{"", []interface{}{"foo"}, "foo"},
+		{"", []any{"foo"}, "foo"},
 	}
 
 	// Common to all test cases.
-	context := []interface{}{"foo", "bar"}
+	context := []any{"foo", "bar"}
 	expectedFields := []Field{String("foo", "bar")}
 
 	for _, tt := range tests {
@@ -397,18 +396,18 @@ func TestSugarTemplatedLogging(t *testing.T) {
 
 func TestSugarLnLogging(t *testing.T) {
 	tests := []struct {
-		args   []interface{}
+		args   []any
 		expect string
 	}{
 		{nil, ""},
-		{[]interface{}{}, ""},
-		{[]interface{}{""}, ""},
-		{[]interface{}{"foo"}, "foo"},
-		{[]interface{}{"foo", "bar"}, "foo bar"},
+		{[]any{}, ""},
+		{[]any{""}, ""},
+		{[]any{"foo"}, "foo"},
+		{[]any{"foo", "bar"}, "foo bar"},
 	}
 
 	// Common to all test cases.
-	context := []interface{}{"foo", "bar"}
+	context := []any{"foo", "bar"}
 	expectedFields := []Field{String("foo", "bar")}
 
 	for _, tt := range tests {

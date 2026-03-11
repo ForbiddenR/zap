@@ -31,7 +31,7 @@ import (
 
 func assertGoexit(t *testing.T, f func()) {
 	var finished bool
-	recovered := make(chan interface{})
+	recovered := make(chan any)
 	go func() {
 		defer func() {
 			recovered <- recover()
@@ -52,14 +52,14 @@ func TestPutNilEntry(t *testing.T) {
 
 	go func() {
 		defer wg.Done()
-		for i := 0; i < 1000; i++ {
+		for range 1000 {
 			putCheckedEntry(nil)
 		}
 	}()
 
 	go func() {
 		defer wg.Done()
-		for i := 0; i < 1000; i++ {
+		for range 1000 {
 			ce := getCheckedEntry()
 			assert.NotNil(t, ce, "Expected only non-nil CheckedEntries in pool.")
 			assert.False(t, ce.dirty, "Unexpected dirty bit set.")

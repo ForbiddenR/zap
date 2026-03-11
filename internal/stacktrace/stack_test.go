@@ -75,7 +75,7 @@ func TestTakeDeepStack(t *testing.T) {
 	)
 	withStackDepth(N, func() {
 		trace := Take(0)
-		for found := 0; found < N; found++ {
+		for found := range N {
 			i := strings.Index(trace, withStackDepthName)
 			if i < 0 {
 				t.Fatalf(`expected %v occurrences of %q, found %d`,

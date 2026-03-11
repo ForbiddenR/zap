@@ -111,7 +111,7 @@ func (s *SugaredLogger) WithOptions(opts ...Option) *SugaredLogger {
 // forgiving: a separate error is logged, but the key-value pair is skipped
 // and execution continues. Passing an orphaned key triggers similar behavior:
 // panics in development and errors in production.
-func (s *SugaredLogger) With(args ...interface{}) *SugaredLogger {
+func (s *SugaredLogger) With(args ...any) *SugaredLogger {
 	return &SugaredLogger{base: s.base.With(s.sweetenFields(args)...)}
 }
 
@@ -126,7 +126,7 @@ func (s *SugaredLogger) With(args ...interface{}) *SugaredLogger {
 // and vice versa. Also, the keys in key-value pairs should be strings. In development,
 // passing a non-string key panics, while in production it logs an error and skips the pair.
 // Passing an orphaned key has the same behavior.
-func (s *SugaredLogger) WithLazy(args ...interface{}) *SugaredLogger {
+func (s *SugaredLogger) WithLazy(args ...any) *SugaredLogger {
 	return &SugaredLogger{base: s.base.WithLazy(s.sweetenFields(args)...)}
 }
 
@@ -139,105 +139,105 @@ func (s *SugaredLogger) Level() zapcore.Level {
 
 // Log logs the provided arguments at provided level.
 // Spaces are added between arguments when neither is a string.
-func (s *SugaredLogger) Log(lvl zapcore.Level, args ...interface{}) {
+func (s *SugaredLogger) Log(lvl zapcore.Level, args ...any) {
 	s.log(lvl, "", args, nil)
 }
 
 // Debug logs the provided arguments at [DebugLevel].
 // Spaces are added between arguments when neither is a string.
-func (s *SugaredLogger) Debug(args ...interface{}) {
+func (s *SugaredLogger) Debug(args ...any) {
 	s.log(DebugLevel, "", args, nil)
 }
 
 // Info logs the provided arguments at [InfoLevel].
 // Spaces are added between arguments when neither is a string.
-func (s *SugaredLogger) Info(args ...interface{}) {
+func (s *SugaredLogger) Info(args ...any) {
 	s.log(InfoLevel, "", args, nil)
 }
 
 // Warn logs the provided arguments at [WarnLevel].
 // Spaces are added between arguments when neither is a string.
-func (s *SugaredLogger) Warn(args ...interface{}) {
+func (s *SugaredLogger) Warn(args ...any) {
 	s.log(WarnLevel, "", args, nil)
 }
 
 // Error logs the provided arguments at [ErrorLevel].
 // Spaces are added between arguments when neither is a string.
-func (s *SugaredLogger) Error(args ...interface{}) {
+func (s *SugaredLogger) Error(args ...any) {
 	s.log(ErrorLevel, "", args, nil)
 }
 
 // DPanic logs the provided arguments at [DPanicLevel].
 // In development, the logger then panics. (See [DPanicLevel] for details.)
 // Spaces are added between arguments when neither is a string.
-func (s *SugaredLogger) DPanic(args ...interface{}) {
+func (s *SugaredLogger) DPanic(args ...any) {
 	s.log(DPanicLevel, "", args, nil)
 }
 
 // Panic constructs a message with the provided arguments and panics.
 // Spaces are added between arguments when neither is a string.
-func (s *SugaredLogger) Panic(args ...interface{}) {
+func (s *SugaredLogger) Panic(args ...any) {
 	s.log(PanicLevel, "", args, nil)
 }
 
 // Fatal constructs a message with the provided arguments and calls os.Exit.
 // Spaces are added between arguments when neither is a string.
-func (s *SugaredLogger) Fatal(args ...interface{}) {
+func (s *SugaredLogger) Fatal(args ...any) {
 	s.log(FatalLevel, "", args, nil)
 }
 
 // Logf formats the message according to the format specifier
 // and logs it at provided level.
-func (s *SugaredLogger) Logf(lvl zapcore.Level, template string, args ...interface{}) {
+func (s *SugaredLogger) Logf(lvl zapcore.Level, template string, args ...any) {
 	s.log(lvl, template, args, nil)
 }
 
 // Debugf formats the message according to the format specifier
 // and logs it at [DebugLevel].
-func (s *SugaredLogger) Debugf(template string, args ...interface{}) {
+func (s *SugaredLogger) Debugf(template string, args ...any) {
 	s.log(DebugLevel, template, args, nil)
 }
 
 // Infof formats the message according to the format specifier
 // and logs it at [InfoLevel].
-func (s *SugaredLogger) Infof(template string, args ...interface{}) {
+func (s *SugaredLogger) Infof(template string, args ...any) {
 	s.log(InfoLevel, template, args, nil)
 }
 
 // Warnf formats the message according to the format specifier
 // and logs it at [WarnLevel].
-func (s *SugaredLogger) Warnf(template string, args ...interface{}) {
+func (s *SugaredLogger) Warnf(template string, args ...any) {
 	s.log(WarnLevel, template, args, nil)
 }
 
 // Errorf formats the message according to the format specifier
 // and logs it at [ErrorLevel].
-func (s *SugaredLogger) Errorf(template string, args ...interface{}) {
+func (s *SugaredLogger) Errorf(template string, args ...any) {
 	s.log(ErrorLevel, template, args, nil)
 }
 
 // DPanicf formats the message according to the format specifier
 // and logs it at [DPanicLevel].
 // In development, the logger then panics. (See [DPanicLevel] for details.)
-func (s *SugaredLogger) DPanicf(template string, args ...interface{}) {
+func (s *SugaredLogger) DPanicf(template string, args ...any) {
 	s.log(DPanicLevel, template, args, nil)
 }
 
 // Panicf formats the message according to the format specifier
 // and panics.
-func (s *SugaredLogger) Panicf(template string, args ...interface{}) {
+func (s *SugaredLogger) Panicf(template string, args ...any) {
 	s.log(PanicLevel, template, args, nil)
 }
 
 // Fatalf formats the message according to the format specifier
 // and calls os.Exit.
-func (s *SugaredLogger) Fatalf(template string, args ...interface{}) {
+func (s *SugaredLogger) Fatalf(template string, args ...any) {
 	s.log(FatalLevel, template, args, nil)
 }
 
 // Logw logs a message with some additional context. The variadic key-value
 // pairs are treated as they are in With.
-func (s *SugaredLogger) Logw(lvl zapcore.Level, msg string, keysAndValues ...interface{}) {
+func (s *SugaredLogger) Logw(lvl zapcore.Level, msg string, keysAndValues ...any) {
 	s.log(lvl, msg, nil, keysAndValues)
 }
 
@@ -247,93 +247,93 @@ func (s *SugaredLogger) Logw(lvl zapcore.Level, msg string, keysAndValues ...int
 // When debug-level logging is disabled, this is much faster than
 //
 //	s.With(keysAndValues).Debug(msg)
-func (s *SugaredLogger) Debugw(msg string, keysAndValues ...interface{}) {
+func (s *SugaredLogger) Debugw(msg string, keysAndValues ...any) {
 	s.log(DebugLevel, msg, nil, keysAndValues)
 }
 
 // Infow logs a message with some additional context. The variadic key-value
 // pairs are treated as they are in With.
-func (s *SugaredLogger) Infow(msg string, keysAndValues ...interface{}) {
+func (s *SugaredLogger) Infow(msg string, keysAndValues ...any) {
 	s.log(InfoLevel, msg, nil, keysAndValues)
 }
 
 // Warnw logs a message with some additional context. The variadic key-value
 // pairs are treated as they are in With.
-func (s *SugaredLogger) Warnw(msg string, keysAndValues ...interface{}) {
+func (s *SugaredLogger) Warnw(msg string, keysAndValues ...any) {
 	s.log(WarnLevel, msg, nil, keysAndValues)
 }
 
 // Errorw logs a message with some additional context. The variadic key-value
 // pairs are treated as they are in With.
-func (s *SugaredLogger) Errorw(msg string, keysAndValues ...interface{}) {
+func (s *SugaredLogger) Errorw(msg string, keysAndValues ...any) {
 	s.log(ErrorLevel, msg, nil, keysAndValues)
 }
 
 // DPanicw logs a message with some additional context. In development, the
 // logger then panics. (See DPanicLevel for details.) The variadic key-value
 // pairs are treated as they are in With.
-func (s *SugaredLogger) DPanicw(msg string, keysAndValues ...interface{}) {
+func (s *SugaredLogger) DPanicw(msg string, keysAndValues ...any) {
 	s.log(DPanicLevel, msg, nil, keysAndValues)
 }
 
 // Panicw logs a message with some additional context, then panics. The
 // variadic key-value pairs are treated as they are in With.
-func (s *SugaredLogger) Panicw(msg string, keysAndValues ...interface{}) {
+func (s *SugaredLogger) Panicw(msg string, keysAndValues ...any) {
 	s.log(PanicLevel, msg, nil, keysAndValues)
 }
 
 // Fatalw logs a message with some additional context, then calls os.Exit. The
 // variadic key-value pairs are treated as they are in With.
-func (s *SugaredLogger) Fatalw(msg string, keysAndValues ...interface{}) {
+func (s *SugaredLogger) Fatalw(msg string, keysAndValues ...any) {
 	s.log(FatalLevel, msg, nil, keysAndValues)
 }
 
 // Logln logs a message at provided level.
 // Spaces are always added between arguments.
-func (s *SugaredLogger) Logln(lvl zapcore.Level, args ...interface{}) {
+func (s *SugaredLogger) Logln(lvl zapcore.Level, args ...any) {
 	s.logln(lvl, args, nil)
 }
 
 // Debugln logs a message at [DebugLevel].
 // Spaces are always added between arguments.
-func (s *SugaredLogger) Debugln(args ...interface{}) {
+func (s *SugaredLogger) Debugln(args ...any) {
 	s.logln(DebugLevel, args, nil)
 }
 
 // Infoln logs a message at [InfoLevel].
 // Spaces are always added between arguments.
-func (s *SugaredLogger) Infoln(args ...interface{}) {
+func (s *SugaredLogger) Infoln(args ...any) {
 	s.logln(InfoLevel, args, nil)
 }
 
 // Warnln logs a message at [WarnLevel].
 // Spaces are always added between arguments.
-func (s *SugaredLogger) Warnln(args ...interface{}) {
+func (s *SugaredLogger) Warnln(args ...any) {
 	s.logln(WarnLevel, args, nil)
 }
 
 // Errorln logs a message at [ErrorLevel].
 // Spaces are always added between arguments.
-func (s *SugaredLogger) Errorln(args ...interface{}) {
+func (s *SugaredLogger) Errorln(args ...any) {
 	s.logln(ErrorLevel, args, nil)
 }
 
 // DPanicln logs a message at [DPanicLevel].
 // In development, the logger then panics. (See [DPanicLevel] for details.)
 // Spaces are always added between arguments.
-func (s *SugaredLogger) DPanicln(args ...interface{}) {
+func (s *SugaredLogger) DPanicln(args ...any) {
 	s.logln(DPanicLevel, args, nil)
 }
 
 // Panicln logs a message at [PanicLevel] and panics.
 // Spaces are always added between arguments.
-func (s *SugaredLogger) Panicln(args ...interface{}) {
+func (s *SugaredLogger) Panicln(args ...any) {
 	s.logln(PanicLevel, args, nil)
 }
 
 // Fatalln logs a message at [FatalLevel] and calls os.Exit.
 // Spaces are always added between arguments.
-func (s *SugaredLogger) Fatalln(args ...interface{}) {
+func (s *SugaredLogger) Fatalln(args ...any) {
 	s.logln(FatalLevel, args, nil)
 }
 
@@ -343,7 +343,7 @@ func (s *SugaredLogger) Sync() error {
 }
 
 // log message with Sprint, Sprintf, or neither.
-func (s *SugaredLogger) log(lvl zapcore.Level, template string, fmtArgs []interface{}, context []interface{}) {
+func (s *SugaredLogger) log(lvl zapcore.Level, template string, fmtArgs []any, context []any) {
 	// If logging at this level is completely disabled, skip the overhead of
 	// string formatting.
 	if lvl < DPanicLevel && !s.base.Core().Enabled(lvl) {
@@ -357,7 +357,7 @@ func (s *SugaredLogger) log(lvl zapcore.Level, template string, fmtArgs []interf
 }
 
 // logln message with Sprintln
-func (s *SugaredLogger) logln(lvl zapcore.Level, fmtArgs []interface{}, context []interface{}) {
+func (s *SugaredLogger) logln(lvl zapcore.Level, fmtArgs []any, context []any) {
 	if lvl < DPanicLevel && !s.base.Core().Enabled(lvl) {
 		return
 	}
@@ -369,7 +369,7 @@ func (s *SugaredLogger) logln(lvl zapcore.Level, fmtArgs []interface{}, context 
 }
 
 // getMessage format with Sprint, Sprintf, or neither.
-func getMessage(template string, fmtArgs []interface{}) string {
+func getMessage(template string, fmtArgs []any) string {
 	if len(fmtArgs) == 0 {
 		return template
 	}
@@ -387,12 +387,12 @@ func getMessage(template string, fmtArgs []interface{}) string {
 }
 
 // getMessageln format with Sprintln.
-func getMessageln(fmtArgs []interface{}) string {
+func getMessageln(fmtArgs []any) string {
 	msg := fmt.Sprintln(fmtArgs...)
 	return msg[:len(msg)-1]
 }
 
-func (s *SugaredLogger) sweetenFields(args []interface{}) []Field {
+func (s *SugaredLogger) sweetenFields(args []any) []Field {
 	if len(args) == 0 {
 		return nil
 	}
@@ -455,7 +455,7 @@ func (s *SugaredLogger) sweetenFields(args []interface{}) []Field {
 
 type invalidPair struct {
 	position   int
-	key, value interface{}
+	key, value any
 }
 
 func (p invalidPair) MarshalLogObject(enc zapcore.ObjectEncoder) error {

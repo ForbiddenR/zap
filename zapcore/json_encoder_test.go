@@ -97,7 +97,7 @@ func TestJSONEncodeEntry(t *testing.T) {
 				// (`nil`), as well as the non-nil interface value with a
 				// dynamic type and nil value (`(*struct{})(nil)`).
 				zap.Reflect("null_value", nil),
-				zap.Reflect("array_with_null_elements", []interface{}{&struct{}{}, nil, (*struct{})(nil), 2}),
+				zap.Reflect("array_with_null_elements", []any{&struct{}{}, nil, (*struct{})(nil), 2}),
 				zap.Reflect("such", foo{
 					A: "lol",
 					B: 123,
@@ -221,7 +221,7 @@ type emptyReflectedEncoder struct {
 	writer io.Writer
 }
 
-func (enc *emptyReflectedEncoder) Encode(obj interface{}) error {
+func (enc *emptyReflectedEncoder) Encode(obj any) error {
 	_, err := enc.writer.Write([]byte("{}"))
 	return err
 }
@@ -237,7 +237,7 @@ func TestJSONCustomReflectedEncoder(t *testing.T) {
 			field: zapcore.Field{
 				Key:  "data",
 				Type: zapcore.ReflectType,
-				Interface: map[string]interface{}{
+				Interface: map[string]any{
 					"foo": "hello",
 					"bar": 1111,
 				},
@@ -255,7 +255,6 @@ func TestJSONCustomReflectedEncoder(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 

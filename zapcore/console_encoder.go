@@ -30,7 +30,7 @@ import (
 
 var _sliceEncoderPool = pool.New(func() *sliceArrayEncoder {
 	return &sliceArrayEncoder{
-		elems: make([]interface{}, 0, 2),
+		elems: make([]any, 0, 2),
 	}
 })
 

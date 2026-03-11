@@ -534,7 +534,7 @@ type turducken struct{}
 
 func (t turducken) MarshalLogObject(enc ObjectEncoder) error {
 	return enc.AddArray("ducks", ArrayMarshalerFunc(func(arr ArrayEncoder) error {
-		for i := 0; i < 2; i++ {
+		for range 2 {
 			err := arr.AppendObject(ObjectMarshalerFunc(func(inner ObjectEncoder) error {
 				inner.AddString("in", "chicken")
 				return nil
@@ -653,7 +653,7 @@ func asciiRoundTripsCorrectlyByteString(s ASCII) bool {
 }
 
 func TestJSONQuick(t *testing.T) {
-	check := func(f interface{}) {
+	check := func(f any) {
 		err := quick.Check(f, &quick.Config{MaxCountScale: 100.0})
 		assert.NoError(t, err)
 	}

@@ -59,13 +59,13 @@ func TestErrorArrayConstructor(t *testing.T) {
 	tests := []struct {
 		desc     string
 		field    Field
-		expected []interface{}
+		expected []any
 	}{
-		{"empty errors", Errors("", []error{}), []interface{}{}},
+		{"empty errors", Errors("", []error{}), []any{}},
 		{
 			"errors",
 			Errors("", []error{nil, errors.New("foo"), nil, errors.New("bar")}),
-			[]interface{}{map[string]interface{}{"error": "foo"}, map[string]interface{}{"error": "bar"}},
+			[]any{map[string]any{"error": "foo"}, map[string]any{"error": "bar"}},
 		},
 	}
 
@@ -86,12 +86,12 @@ func TestErrorsArraysHandleRichErrors(t *testing.T) {
 	assert.Equal(t, 1, len(enc.Fields), "Expected only top-level field.")
 
 	val := enc.Fields["k"]
-	arr, ok := val.([]interface{})
+	arr, ok := val.([]any)
 	require.True(t, ok, "Expected top-level field to be an array.")
 	require.Equal(t, 1, len(arr), "Expected only one error object in array.")
 
 	serialized := arr[0]
-	errMap, ok := serialized.(map[string]interface{})
+	errMap, ok := serialized.(map[string]any)
 	require.True(t, ok, "Expected serialized error to be a map, got %T.", serialized)
 	assert.Equal(t, "egad", errMap["error"], "Unexpected standard error string.")
 }

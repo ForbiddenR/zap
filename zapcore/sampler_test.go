@@ -76,7 +76,7 @@ func TestSampler(t *testing.T) {
 		if lvl == DebugLevel {
 			probeLevel = InfoLevel
 		}
-		for i := 0; i < 10; i++ {
+		for range 10 {
 			writeSequence(sampler, 1, probeLevel)
 		}
 		// Clear any output.
@@ -92,7 +92,6 @@ func TestSampler(t *testing.T) {
 func TestLevelOfSampler(t *testing.T) {
 	levels := []Level{DebugLevel, InfoLevel, WarnLevel, ErrorLevel, DPanicLevel, PanicLevel, FatalLevel}
 	for _, lvl := range levels {
-		lvl := lvl
 		t.Run(lvl.String(), func(t *testing.T) {
 			t.Parallel()
 
@@ -117,7 +116,7 @@ func TestSamplerTicking(t *testing.T) {
 
 	// If we log five or fewer messages every tick, none of them should be
 	// dropped.
-	for tick := 0; tick < 2; tick++ {
+	for range 2 {
 		for i := 1; i <= 5; i++ {
 			writeSequence(sampler, i, InfoLevel)
 		}
@@ -133,7 +132,7 @@ func TestSamplerTicking(t *testing.T) {
 
 	// If we log quickly, we should drop some logs. The first five statements
 	// each tick should be logged, then every tenth.
-	for tick := 0; tick < 3; tick++ {
+	for range 3 {
 		for i := 1; i < 18; i++ {
 			writeSequence(sampler, i, InfoLevel)
 		}
@@ -195,7 +194,7 @@ func TestSamplerConcurrent(t *testing.T) {
 
 	stop := make(chan struct{})
 	var wg sync.WaitGroup
-	for i := 0; i < numGoroutines; i++ {
+	for i := range numGoroutines {
 		wg.Add(1)
 		go func(i int, ticker *time.Ticker) {
 			defer wg.Done()
@@ -207,7 +206,7 @@ func TestSamplerConcurrent(t *testing.T) {
 					return
 
 				case <-ticker.C:
-					for j := 0; j < logsPerTick*2; j++ {
+					for range logsPerTick * 2 {
 						msg := fmt.Sprintf("msg%v", i%numMessages)
 						ent := Entry{
 							Level:   DebugLevel,
@@ -254,15 +253,13 @@ func TestSamplerRaces(t *testing.T) {
 	var wg sync.WaitGroup
 	start := make(chan struct{})
 
-	for i := 0; i < 100; i++ {
-		wg.Add(1)
-		go func() {
+	for range 100 {
+		wg.Go(func() {
 			<-start
-			for j := 0; j < 100; j++ {
+			for j := range 100 {
 				writeSequence(sampler, j, InfoLevel)
 			}
-			wg.Done()
-		}()
+		})
 	}
 
 	close(start)
@@ -297,7 +294,7 @@ func TestSamplerWithZeroThereafter(t *testing.T) {
 
 	now := time.Now()
 
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		ent := Entry{
 			Level:   InfoLevel,
 			Message: "msg",
@@ -313,7 +310,7 @@ func TestSamplerWithZeroThereafter(t *testing.T) {
 
 	now = now.Add(time.Second)
 
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		ent := Entry{
 			Level:   InfoLevel,
 			Message: "msg",

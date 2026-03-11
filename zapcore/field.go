@@ -106,7 +106,7 @@ type Field struct {
 	Type      FieldType
 	Integer   int64
 	String    string
-	Interface interface{}
+	Interface any
 }
 
 // AddTo exports a field through the ObjectEncoder interface. It's primarily
@@ -211,7 +211,7 @@ func addFields(enc ObjectEncoder, fields []Field) {
 	}
 }
 
-func encodeStringer(key string, stringer interface{}, enc ObjectEncoder) (retErr error) {
+func encodeStringer(key string, stringer any, enc ObjectEncoder) (retErr error) {
 	// Try to capture panics (from nil references or otherwise) when calling
 	// the String() method, similar to https://golang.org/src/fmt/print.go#L540
 	defer func() {
@@ -219,7 +219,7 @@ func encodeStringer(key string, stringer interface{}, enc ObjectEncoder) (retErr
 			// If it's a nil pointer, just say "<nil>". The likeliest causes are a
 			// Stringer that fails to guard against nil or a nil pointer for a
 			// value receiver, and in either case, "<nil>" is a nice result.
-			if v := reflect.ValueOf(stringer); v.Kind() == reflect.Ptr && v.IsNil() {
+			if v := reflect.ValueOf(stringer); v.Kind() == reflect.Pointer && v.IsNil() {
 				enc.AddString(key, "<nil>")
 				return
 			}

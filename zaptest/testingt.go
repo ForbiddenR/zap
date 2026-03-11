@@ -24,10 +24,10 @@ package zaptest
 // objects.
 type TestingT interface {
 	// Logs the given message without failing the test.
-	Logf(string, ...interface{})
+	Logf(string, ...any)
 
 	// Logs the given message and marks the test as failed.
-	Errorf(string, ...interface{})
+	Errorf(string, ...any)
 
 	// Marks the test as failed.
 	Fail()

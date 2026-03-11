@@ -205,7 +205,7 @@ func (l *Level) Set(s string) error {
 }
 
 // Get gets the level for the flag.Getter interface.
-func (l *Level) Get() interface{} {
+func (l *Level) Get() any {
 	return *l
 }
 
