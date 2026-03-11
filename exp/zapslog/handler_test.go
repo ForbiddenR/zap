@@ -31,11 +31,11 @@ import (
 	"testing/slogtest"
 	"time"
 
+	"github.com/ForbiddenR/zap/zapcore"
+	"github.com/ForbiddenR/zap/zaptest"
+	"github.com/ForbiddenR/zap/zaptest/observer"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/zap/zapcore"
-	"go.uber.org/zap/zaptest"
-	"go.uber.org/zap/zaptest/observer"
 )
 
 func TestAddCaller(t *testing.T) {

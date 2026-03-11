@@ -25,8 +25,8 @@ import (
 	"math"
 	"time"
 
-	"go.uber.org/zap/internal/stacktrace"
-	"go.uber.org/zap/zapcore"
+	"github.com/ForbiddenR/zap/internal/stacktrace"
+	"github.com/ForbiddenR/zap/zapcore"
 )
 
 // Field is an alias for Field. Aliasing this type dramatically

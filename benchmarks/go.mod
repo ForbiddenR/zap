@@ -1,8 +1,8 @@
-module go.uber.org/zap/benchmarks
+module github.com/ForbiddenR/zap/benchmarks
 
-go 1.21
+go 1.26
 
-replace go.uber.org/zap => ../
+replace github.com/ForbiddenR/zap => ../
 
 require (
 	github.com/apex/log v1.9.0
@@ -10,7 +10,7 @@ require (
 	github.com/rs/zerolog v1.30.0
 	github.com/sirupsen/logrus v1.9.3
 	go.uber.org/multierr v1.11.0
-	go.uber.org/zap v1.23.0
+	github.com/ForbiddenR/zap v1.27.2
 	gopkg.in/inconshreveable/log15.v2 v2.16.0
 )
 

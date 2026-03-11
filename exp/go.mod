@@ -1,4 +1,4 @@
-module go.uber.org/zap/exp
+module github.com/ForbidenR/zap/exp
 
 go 1.19
 
